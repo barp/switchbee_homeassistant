@@ -96,9 +96,9 @@ class SwitchBeeSwitch(CoordinatorEntity, SwitchEntity):
       return self.coordinator.data[self._unique_id].name
 
   async def async_turn_on(self):
-    await self.client.turn_on(self.coordinator[self._unique_id])
+    await self.client.turn_on(self.coordinator.data[self._unique_id])
     await self.coordinator.async_request_refresh()
   
   async def async_turn_off(self):
-    await self.client.turn_off(self.coordinator[self._unique_id])
+    await self.client.turn_off(self.coordinator.data[self._unique_id])
     await self.coordinator.async_request_refresh()
