@@ -34,6 +34,8 @@ from homeassistant.helpers.update_coordinator import (
     UpdateFailed,
 )
 
+_LOGGER = logging.getLogger(__name__)
+
 SCAN_INTERVAL = timedelta(minutes=1)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
