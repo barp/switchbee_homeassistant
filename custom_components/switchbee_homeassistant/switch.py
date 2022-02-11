@@ -52,7 +52,7 @@ async def async_setup_platform(
     ):
   session = async_get_clientsession(hass)
 
-  client = await pybswitch.CuClient.new(ip, 23789, base64.urlsafe_b64decode(config[CONF_CLIENT_SECRET]))
+  client = await pybswitch.CuClient.new(config[CONF_IP_ADDRESS], 23789, base64.urlsafe_b64decode(config[CONF_CLIENT_SECRET]))
   items = await self.client.get_all_items()
   switches = [SwitchBeeSwitch(client, item) for item in items]
   async_add_entities(switches, update_before_add=True)
