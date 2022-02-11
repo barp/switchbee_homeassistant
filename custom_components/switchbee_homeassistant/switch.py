@@ -43,6 +43,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
       }
     )
 
+def calculate_unique_id(item):
+  return "switchbee_" + str(item.unit_type) + "_" + str(item.unit_id)
 
 async def async_setup_platform(
     hass: HomeAssistantType,
@@ -53,20 +55,34 @@ async def async_setup_platform(
   session = async_get_clientsession(hass)
 
   client = await pybswitch.CuClient.new(config[CONF_IP_ADDRESS], 23789, base64.urlsafe_b64decode(config[CONF_CLIENT_SECRET]))
-  items = await client.get_all_items()
-  switches = [SwitchBeeSwitch(client, item) for item in items]
+  async def async_update_data():
+    try:
+      items = await client.get_all_items()
+      return {calculate_unique_id(item): item for item in items}
+    except Exception as err:
+      raise UpdateFailed(f"error getting items state: {err}")
+
+  coordinator = DataUpdateCoordinator(
+      hass,
+      _LOGGER,
+      name="switchbee",
+      update_method=async_update_data,
+      update_interval=timedelta(minutes=1),
+  )
+  await coordinator.async_config_entry_first_refresh()
+  switches = [SwitchBeeSwitch(coordinator, id, client) for id, item in coordinator.data.items()]
   async_add_entities(switches, update_before_add=True)
 
 
-class SwitchBeeSwitch(SwitchEntity):
-  def __init__(self, client, item):
+class SwitchBeeSwitch(CoordinatorEntity, SwitchEntity):
+  def __init__(self, coordinator, id, client):
+    super().__init__(coordinator)
     self.client = client
-    self._item = item
-    self._unique_id = "switchbee_" + str(self._item.unit_type) + "_" + str(self._item.unit_id)
+    self._unique_id = id
 
   @property
   def is_on(self):
-    return self._item.value == 100
+    return self.coordinator.data[self._unique_id].value == 100
 
   @property
   def unique_id(self) -> str:
@@ -79,13 +95,8 @@ class SwitchBeeSwitch(SwitchEntity):
 
   async def async_turn_on(self):
     await self.client.turn_on(self._item)
+    await self.coordinator.async_request_refresh()
   
   async def async_turn_off(self):
     await self.client.turn_off(self._item)
-
-  async def async_update(self):
-    items = await self.client.get_all_items()
-    for item in items:
-      if item.unit_id == self._item.unit_id and item.unit_type == self._item.unit_type:
-        self._item = item
-        break
+    await self.coordinator.async_request_refresh()
