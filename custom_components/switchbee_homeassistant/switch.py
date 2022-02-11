@@ -93,7 +93,7 @@ class SwitchBeeSwitch(CoordinatorEntity, SwitchEntity):
   @property
   def name(self):
       """The name property."""
-      return self._item.name
+      return self.coordinator.data[self._unique_id].name
 
   async def async_turn_on(self):
     await self.client.turn_on(self._item)
