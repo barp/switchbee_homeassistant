@@ -1,11 +1,15 @@
 {
-  "codeowners": ["@barp"],
+  "codeowners": [
+    "@barp"
+  ],
   "config_flow": false,
   "dependencies": [],
   "documentation": "https://github.com/barp/switchbee_homeassistant",
   "domain": "switchbee_homeassistant",
   "iot_class": "local_polling",
   "name": "SwitchBee Integration",
-  "requirements": [],
+  "requirements": [
+    "https://github.com/barp/bswitcher/releases/download/v0.1.0/bswitch_python-0.1.0.tar.gz"
+  ],
   "version": "0.1.0"
 }
