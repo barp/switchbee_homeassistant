@@ -1,5 +1,9 @@
 import logging
 from typing import Any, Callable, Dict, Optional
+from datetime import timedelta
+
+import pybswitch
+import base64
 
 import voluptuous as vol
 
@@ -24,18 +28,25 @@ from homeassistant.helpers.typing import (
     HomeAssistantType,
 )
 
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+    UpdateFailed,
+)
+
+SCAN_INTERVAL = timedelta(seconds=10)
+
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
       vol.Required(CONF_CLIENT_SECRET): cv.string,
       vol.Required(CONF_IP_ADDRESS): cv.string,
-      vol.Required(CONF_UNIQUE_ID): cv.string,
       }
     )
 
 
 def parse_id(id: str):
   tp, id = id.split(",")
-  return tp, id
+  return int(tp), int(id)
 
 async def async_setup_platform(
     hass: HomeAssistantType,
@@ -44,26 +55,32 @@ async def async_setup_platform(
     discovery_info: Optional[DiscoveryInfoType] = None,
     ):
   session = async_get_clientsession(hass)
-  switches = [SwitchBeeSwitch(conf[CONF_CLIENT_SECRET], conf[CONF_IP_ADDRESS], tp, id)]
+
+  client = await pybswitch.CuClient.new(ip, 23789, base64.urlsafe_b64decode(config[CONF_CLIENT_SECRET]))
+  items = await self.client.get_all_items()
+  switches = [SwitchBeeSwitch(client, item) for item in items]
   async_add_entities(switches, update_before_add=True)
 
 
 class SwitchBeeSwitch(SwitchEntity):
-  def __init__(self, cert, ip, tp, id):
-    self.cert = cert
-    self.ip = ip
+  def __init__(self, client, item):
+    self.client = client
     self.tp = tp
     self.id = id
-    self._state = False # not on
+    self._item = item
 
   def is_on(self):
-    return self._state
+    return self._item.value == 100
 
   async def async_turn_on(self):
-    pass
+    await self.client.turn_on(self._item)
   
   async def async_turn_off(self):
-    pass
+    await self.client.turn_off(self._item)
 
   async def async_update(self):
-    pass
+    items = await self.client.get_all_items()
+    for item in items:
+      if item.unit_id == self._item.unit_id and item.unit_type == self._item.unit_type:
+        self._item = item
+        break
