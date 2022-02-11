@@ -44,10 +44,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     )
 
 
-def parse_id(id: str):
-  tp, id = id.split(",")
-  return int(tp), int(id)
-
 async def async_setup_platform(
     hass: HomeAssistantType,
     config: ConfigType,
