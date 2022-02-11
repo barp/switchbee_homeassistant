@@ -1,0 +1,1 @@
+DOMAIN = "switchbee_homeassistant"
