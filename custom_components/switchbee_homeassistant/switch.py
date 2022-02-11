@@ -61,8 +61,6 @@ async def async_setup_platform(
 class SwitchBeeSwitch(SwitchEntity):
   def __init__(self, client, item):
     self.client = client
-    self.tp = tp
-    self.id = id
     self._item = item
 
   def is_on(self):
