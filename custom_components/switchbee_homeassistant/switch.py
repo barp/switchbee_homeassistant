@@ -62,9 +62,20 @@ class SwitchBeeSwitch(SwitchEntity):
   def __init__(self, client, item):
     self.client = client
     self._item = item
+    self._unique_id = "switchbee_" + str(self._item.unit_type) + "_" + str(self._item.unit_id)
 
+  @property
   def is_on(self):
     return self._item.value == 100
+
+  @property
+  def unique_id(self) -> str:
+    return self._unique_id
+
+  @property
+  def name(self):
+      """The name property."""
+      return self._item.name
 
   async def async_turn_on(self):
     await self.client.turn_on(self._item)
