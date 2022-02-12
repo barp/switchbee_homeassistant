@@ -1,0 +1,14 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "client_secret": "The device certificate",
+          "ip_address": "Central Unit IP address"
+        },
+        "description": "Enter your SwitchBee Cu credentials",
+        "title": "Authentication"
+      }
+    }
+  }
+}
