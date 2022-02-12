@@ -11,16 +11,15 @@ from homeassistant.components.switch import PLATFORM_SCHEMA
 from homeassistant.const import (
     CONF_CLIENT_SECRET,
     CONF_IP_ADDRESS,
-    CONF_UNIQUE_ID,
 )
 
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
 
 try:
-    from homeassistant.components.switch import SwitchEntity
+  from homeassistant.components.switch import SwitchEntity
 except ImportError:
-    from homeassistant.components.switch import SwitchDevice as SwitchEntity
+  from homeassistant.components.switch import SwitchDevice as SwitchEntity
 
 from homeassistant.helpers.typing import (
     ConfigType,
@@ -38,25 +37,28 @@ _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(minutes=1)
 
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
-    {
-      vol.Required(CONF_CLIENT_SECRET): cv.string,
-      vol.Required(CONF_IP_ADDRESS): cv.string,
-      }
-    )
+PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
+    vol.Required(CONF_CLIENT_SECRET): cv.string,
+    vol.Required(CONF_IP_ADDRESS): cv.string,
+})
+
 
 def calculate_unique_id(item):
   return "switchbee_" + str(item.unit_type) + "_" + str(item.unit_id)
+
 
 async def async_setup_platform(
     hass: HomeAssistantType,
     config: ConfigType,
     async_add_entities: Callable,
     discovery_info: Optional[DiscoveryInfoType] = None,
-    ):
+):
   session = async_get_clientsession(hass)
 
-  client = await pybswitch.CuClient.new(config[CONF_IP_ADDRESS], 23789, base64.urlsafe_b64decode(config[CONF_CLIENT_SECRET]))
+  client = await pybswitch.CuClient.new(
+      config[CONF_IP_ADDRESS], 23789,
+      base64.urlsafe_b64decode(config[CONF_CLIENT_SECRET]))
+
   async def async_update_data():
     try:
       items = await client.get_all_items()
@@ -72,12 +74,17 @@ async def async_setup_platform(
       update_interval=timedelta(minutes=1),
   )
   await coordinator.async_config_entry_first_refresh()
-  switches = [SwitchBeeSwitch(coordinator, id, client) for id, item in coordinator.data.items()]
+  switches = [
+      SwitchBeeSwitch(coordinator, id, client)
+      for id in coordinator.data.keys()
+  ]
   async_add_entities(switches, update_before_add=True)
 
 
 class SwitchBeeSwitch(CoordinatorEntity, SwitchEntity):
-  def __init__(self, coordinator, id, client):
+
+  def __init__(self, coordinator: DataUpdateCoordinator, id: str,
+               client: pybswitch.CuClient):
     super().__init__(coordinator)
     self.client = client
     self._unique_id = id
@@ -92,13 +99,13 @@ class SwitchBeeSwitch(CoordinatorEntity, SwitchEntity):
 
   @property
   def name(self):
-      """The name property."""
-      return self.coordinator.data[self._unique_id].name
+    """The name property."""
+    return self.coordinator.data[self._unique_id].name
 
   async def async_turn_on(self):
     await self.client.turn_on(self.coordinator.data[self._unique_id])
     await self.coordinator.async_request_refresh()
-  
+
   async def async_turn_off(self):
     await self.client.turn_off(self.coordinator.data[self._unique_id])
     await self.coordinator.async_request_refresh()
