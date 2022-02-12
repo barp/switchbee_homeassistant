@@ -51,9 +51,9 @@ async def async_setup_platform(
     hass: HomeAssistantType,
     config: ConfigType,
     async_add_entities: Callable,
-    discovery_info: Optional[DiscoveryInfoType] = None,
+    _: Optional[DiscoveryInfoType] = None,
 ):
-  session = async_get_clientsession(hass)
+  async_get_clientsession(hass)
 
   client = await pybswitch.CuClient.new(
       config[CONF_IP_ADDRESS], 23789,
