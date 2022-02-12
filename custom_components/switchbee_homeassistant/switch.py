@@ -90,8 +90,12 @@ class SwitchBeeSwitch(CoordinatorEntity, SwitchEntity):
     self._unique_id = id
 
   @property
+  def _item(self):
+    return self.coordinator.data[self._unique_id]
+
+  @property
   def is_on(self):
-    return self.coordinator.data[self._unique_id].value == 100
+    return self._item.value == 100
 
   @property
   def unique_id(self) -> str:
@@ -100,12 +104,21 @@ class SwitchBeeSwitch(CoordinatorEntity, SwitchEntity):
   @property
   def name(self):
     """The name property."""
-    return self.coordinator.data[self._unique_id].name
+    return self._item.name
 
   async def async_turn_on(self):
-    await self.client.turn_on(self.coordinator.data[self._unique_id])
+    await self.client.turn_on(self._item)
     await self.coordinator.async_request_refresh()
 
   async def async_turn_off(self):
-    await self.client.turn_off(self.coordinator.data[self._unique_id])
+    await self.client.turn_off(self._item)
     await self.coordinator.async_request_refresh()
+
+  @property
+  def device_info(self):
+    return {
+        "identifiers": {("id", self.unique_id)},
+        "name": self.name,
+        "manufacturer": "SwitchBee",
+        "model": "Switch",
+    }
