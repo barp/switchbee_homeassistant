@@ -5,8 +5,6 @@ from homeassistant import config_entries, core
 import pybswitch
 from .const import DOMAIN
 
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
-
 from homeassistant.components.switch import SwitchEntity
 
 from homeassistant.helpers.update_coordinator import (
@@ -22,7 +20,6 @@ async def async_setup_entry(
     entry: config_entries.ConfigEntry,
     async_add_entities: Callable,
 ):
-  async_get_clientsession(hass)
   coordinator = hass.data[DOMAIN][entry.entry_id]
 
   switches = [
