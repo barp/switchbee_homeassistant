@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "data": {
-          "client_secret": "The device certificate",
+          "client_secret": "The device certificate (base64)",
           "ip_address": "Central Unit IP address"
         },
         "description": "Enter your SwitchBee Cu credentials",

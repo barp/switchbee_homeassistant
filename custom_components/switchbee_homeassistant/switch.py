@@ -1,10 +1,8 @@
 import logging
-from typing import Any, Callable, Dict, Optional
-from datetime import timedelta
+from typing import Callable
 from homeassistant import config_entries, core
 
 import pybswitch
-import base64
 from .const import DOMAIN
 
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
