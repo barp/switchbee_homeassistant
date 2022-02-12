@@ -7,6 +7,11 @@
   "documentation": "https://github.com/barp/switchbee_homeassistant",
   "domain": "switchbee_homeassistant",
   "iot_class": "local_polling",
+  "dhcp": [
+    {
+      "hostname": "SwitchBeeCu"
+    }
+  ],
   "name": "SwitchBee Integration",
   "requirements": [
     "pybswitch@https://github.com/barp/bswitcher/releases/download/v0.2.0/bswitch_python-0.2.0.tar.gz",
