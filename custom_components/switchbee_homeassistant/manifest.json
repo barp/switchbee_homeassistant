@@ -14,7 +14,7 @@
   ],
   "name": "SwitchBee Integration",
   "requirements": [
-    "pybswitch@https://github.com/barp/bswitcher/releases/download/v0.2.0/bswitch_python-0.2.0.tar.gz",
+    "pybswitch@https://github.com/barp/bswitcher/releases/download/v0.3.0/bswitch_python-0.3.0.tar.gz",
     "aiohttp"
   ],
   "version": "0.1.0"
