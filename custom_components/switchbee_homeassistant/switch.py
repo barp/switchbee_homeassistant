@@ -2,7 +2,7 @@ import logging
 from typing import Callable
 from homeassistant import config_entries, core
 
-import pybswitch
+import libpybswitch as pybswitch
 from .const import DOMAIN
 
 from homeassistant.components.switch import SwitchEntity

@@ -1,6 +1,6 @@
 from datetime import timedelta
 import logging
-import pybswitch
+import libpybswitch as pybswitch
 from .const import DOMAIN
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 

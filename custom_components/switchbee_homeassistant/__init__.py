@@ -1,6 +1,6 @@
 import base64
 import asyncio
-import pybswitch
+import libpybswitch as pybswitch
 from .switchbee import SwitchBeeCoordinator
 from homeassistant import config_entries, core
 from homeassistant.const import (
